@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from post import Post
+from datetime import datetime
 
 
 def download_posts(game_url, player_name):
@@ -12,13 +13,19 @@ def download_posts(game_url, player_name):
     posts = []
     for post_soup in posts_soup.find_all('li', class_='p-comments p-comments-b'):
         poster_name = post_soup.find('span', itemprop='name')
+        post_number = post_soup.find('a', class_='j-comment-link')
+        date_time_posted = post_soup.find('span', itemprop='dateCreated').get('datetime')
+
         post_content = post_soup.find('div', class_='j-comment-body-container p-comment-body forum-post-body-content')
 
         # Remove quotes from the post content
         for quote in post_content.find_all('blockquote', class_='source-quote'):
             quote.decompose()
 
-        post = Post(poster=poster_name.string, content=post_content.text)
+        post = Post(poster=poster_name.string,
+                    content=post_content.text,
+                    post_number=int(post_number.string.replace('#', '')),  # Remove prefixing "#"
+                    date_time_posted=datetime.strptime(date_time_posted, '%Y-%m-%dT%H:%M:%S'))
         posts.append(post)
 
 if __name__ == '__main__':
