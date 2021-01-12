@@ -13,6 +13,11 @@ def download_posts(game_url, player_name):
     for post_soup in posts_soup.find_all('li', class_='p-comments p-comments-b'):
         poster_name = post_soup.find('span', itemprop='name')
         post_content = post_soup.find('div', class_='j-comment-body-container p-comment-body forum-post-body-content')
+
+        # Remove quotes from the post content
+        for quote in post_content.find_all('blockquote', class_='source-quote'):
+            quote.decompose()
+
         post = Post(poster=poster_name.string, content=post_content.text)
         posts.append(post)
 
