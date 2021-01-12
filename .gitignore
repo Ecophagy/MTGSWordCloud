@@ -1,3 +1,4 @@
 .idea
 venv
 wordcloud.png
+__pycache__
