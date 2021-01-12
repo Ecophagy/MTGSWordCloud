@@ -4,7 +4,7 @@ from post import Post
 from datetime import datetime
 
 
-def download_posts(game_url, player_name):
+def download_posts(game_url, player_list=None):
     posts = []
     page_number = 1
     last_page = False
@@ -26,11 +26,14 @@ def download_posts(game_url, player_name):
             for quote in post_content.find_all('blockquote', class_='source-quote'):
                 quote.decompose()
 
-            post = Post(poster=poster_name.string,
-                        content=post_content.text,
-                        post_number=int(post_number.string.replace('#', '')),  # Remove prefixing "#"
-                        date_time_posted=datetime.strptime(date_time_posted, '%Y-%m-%dT%H:%M:%S'))
-            posts.append(post)
+            # Add post to our list if it matches a player we care about
+            # Empty list means we want everyone
+            if player_list is None or poster_name in player_list:
+                post = Post(poster=poster_name.string,
+                            content=post_content.text,
+                            post_number=int(post_number.string.replace('#', '')),  # Remove prefixing "#"
+                            date_time_posted=datetime.strptime(date_time_posted, '%Y-%m-%dT%H:%M:%S'))
+                posts.append(post)
 
         # If you request ?page=x where x > the last page number, you just get back the last page
         # So we check for the absence of the "Next" button
@@ -38,7 +41,6 @@ def download_posts(game_url, player_name):
             last_page = True
         else:
             page_number = page_number + 1
-    pass
 
 if __name__ == '__main__':
-    download_posts('https://www.mtgsalvation.com/forums/community-forums/mafia/819846-shoushiling-mafia-day-2', 'TODO')
+    download_posts('https://www.mtgsalvation.com/forums/community-forums/mafia/819846-shoushiling-mafia-day-2')
