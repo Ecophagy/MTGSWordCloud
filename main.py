@@ -3,7 +3,9 @@ from bs4 import BeautifulSoup
 from post import Post
 from datetime import datetime
 import argparse
-import wordcloud
+from wordcloud import WordCloud, STOPWORDS
+from os import path
+
 
 def download_posts(game_url, player_list=None):
     posts = []
@@ -45,6 +47,22 @@ def download_posts(game_url, player_list=None):
     return posts
 
 
+def combine_posts(posts):
+    concatenated_posts = ""
+    for post in posts:
+        concatenated_posts = concatenated_posts + post.content
+    return concatenated_posts
+
+
+def generate_word_cloud(text):
+    stopwords = set(STOPWORDS)  # Ignore common english words like "a", "an", "the"
+    wc = WordCloud(background_color="white",
+                   max_words=200,
+                   stopwords=stopwords)
+    wc.generate(text)
+    wc.to_file(path.join(path.dirname(__file__), "wordcloud.png"))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("thread", help="full link to thread to parse")
@@ -57,3 +75,5 @@ if __name__ == '__main__':
         player_list = None
 
     posts = download_posts(args.thread, player_list)
+    raw_data = combine_posts(posts)
+    generate_word_cloud(raw_data)
