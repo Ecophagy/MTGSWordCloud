@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from post import Post
 from datetime import datetime
 import argparse
-
+import wordcloud
 
 def download_posts(game_url, player_list=None):
     posts = []
