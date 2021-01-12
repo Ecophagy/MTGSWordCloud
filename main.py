@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from post import Post
 from datetime import datetime
+import argparse
 
 
 def download_posts(game_url, player_list=None):
@@ -28,7 +29,7 @@ def download_posts(game_url, player_list=None):
 
             # Add post to our list if it matches a player we care about
             # Empty list means we want everyone
-            if player_list is None or poster_name in player_list:
+            if player_list is None or poster_name.string in player_list:
                 post = Post(poster=poster_name.string,
                             content=post_content.text,
                             post_number=int(post_number.string.replace('#', '')),  # Remove prefixing "#"
@@ -41,6 +42,18 @@ def download_posts(game_url, player_list=None):
             last_page = True
         else:
             page_number = page_number + 1
+    return posts
+
 
 if __name__ == '__main__':
-    download_posts('https://www.mtgsalvation.com/forums/community-forums/mafia/819846-shoushiling-mafia-day-2')
+    parser = argparse.ArgumentParser()
+    parser.add_argument("thread", help="full link to thread to parse")
+    parser.add_argument('-p', '--players', nargs='*', help='list of player names to word cloud. Names with spaces in must be wrapped in quotes. Leave empty for all players.')
+
+    args = parser.parse_args()
+    if args.players:
+        player_list = args.players
+    else:
+        player_list = None
+
+    posts = download_posts(args.thread, player_list)
