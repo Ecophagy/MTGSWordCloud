@@ -5,8 +5,10 @@ from datetime import datetime
 import argparse
 from wordcloud import WordCloud, STOPWORDS
 from os import path
+from halo import Halo
 
 
+@Halo(text='Collating Posts...', spinner='line') # Show a spinner while function runs
 def download_posts(game_url, player_list=None):
     posts = []
     page_number = 1
@@ -54,6 +56,7 @@ def combine_posts(posts):
     return concatenated_posts
 
 
+@Halo(text='Generating Word Cloud...', spinner='line') # Show a spinner while function runs
 def generate_word_cloud(text):
     stopwords = set(STOPWORDS)  # Ignore common english words like "a", "an", "the"
     wc = WordCloud(background_color="white",
