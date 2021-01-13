@@ -58,7 +58,8 @@ def generate_word_cloud(text):
     stopwords = set(STOPWORDS)  # Ignore common english words like "a", "an", "the"
     wc = WordCloud(background_color="white",
                    max_words=200,
-                   stopwords=stopwords)
+                   stopwords=stopwords,
+                   scale=2)
     wc.generate(text)
     wc.to_file(path.join(path.dirname(__file__), "wordcloud.png"))
 
